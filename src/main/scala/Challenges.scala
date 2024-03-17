@@ -1,3 +1,5 @@
+import Challenges.Priority.{High, Medium}
+
 object Challenges {
 
   /** Write unit tests using ScalaTest to ensure the correctness of this
@@ -17,7 +19,7 @@ object Challenges {
     * that function to the value. Utilise generic types so this method works
     * with all input types.
     */
-  def applyFunction() = ???
+  def applyFunction[A,B](func: A => B, value: A) = func(value)
 
   /** You are working on a payment processing system. Implement processPayment,
     * which takes two arguments; amount and cardBalance, both of type Double.
@@ -33,7 +35,9 @@ object Challenges {
   def processPayment(
       amount: Double,
       cardBalance: Double
-  ): Either[String, Double] = ???
+  ): Either[String, Double] =
+    if (amount <= cardBalance) Right(cardBalance-amount)
+    else Left("Insufficient balance")
 
   /** You are developing a simple weather application. As part of this
     * application, you want to model different weather conditions using an enum
@@ -47,10 +51,17 @@ object Challenges {
     * it's Cloudy, it should return "It's a cloudy day" and so on.
     */
   enum WeatherCondition:
-    case Something
+    case Sunny
+    case Cloudy
+    case Rainy
+    case Snowy
 
-  def getWeatherDescription(condition: WeatherCondition): String = ???
-
+  def getWeatherDescription(condition: WeatherCondition): String =
+    if (condition == WeatherCondition.Sunny) { "It's a sunny day." }
+    else if (condition == WeatherCondition.Cloudy) {"It's a cloudy day."}
+    else if (condition == WeatherCondition.Rainy) {"It's a rainy day."}
+    else {"It's a snowy day."}
+  
   /** You are developing a notification system. The Notification trait is a
     * template for various notification types. The trait includes a priority, an
     * abstract method for sending the notification and an implemented method to
@@ -75,7 +86,17 @@ object Challenges {
     def formatMessage(message: String): String = s"Message: $message"
   }
 
-  final case class EmailNotification(emailAddress: String)
+  final case class EmailNotification(emailAddress: String) extends Notification {
+    override val priority: Priority = High
+    def sendNotification(message: String): String =
+      s"Sending email to $emailAddress with message: $message"
+  }
 
-  final case class SMSNotification(phoneNumber: String)
+  final case class SMSNotification(phoneNumber: String) extends Notification {
+    override val priority: Priority = Medium
+
+    def sendNotification(message: String): String =
+      s"Sending SMS to $phoneNumber: $message"
+  }
+
 }
